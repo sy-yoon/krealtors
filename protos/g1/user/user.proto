@@ -1,0 +1,71 @@
+// protos/v1/user/user.proto
+//protoc -I . --go_out . --go_opt paths=source_relative --go-grpc_out . --go-grpc_opt paths=source_relative protos/g1/user/user.proto
+//protoc -I . --grpc-gateway_out . --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true protos/g1/user/user.proto
+
+syntax = "proto3";
+
+package v1.user;
+
+option go_package = "github.com/sy-yoon/krealtors/protos/g1/user";
+
+import "google/api/annotations.proto"; // 추가된 부분
+import "google/protobuf/empty.proto";
+import "protos/v1/common/common.proto";
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (User) {
+        option (google.api.http) = {
+            get: "/v1/users/{user_id}"  // 추가된 부분
+        };
+    }
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+        option (google.api.http) = {
+            get: "/v1/users" // 추가된 부분
+        };
+    }
+    rpc CreateUser(User) returns (User) {
+        option (google.api.http) = {
+            post: "/v1/users" // 추가된 부분
+        };
+    }
+    rpc UpdateUser(User) returns (User) {
+        option (google.api.http) = {
+            patch: "/v1/users" // 추가된 부분
+        };
+    }
+    rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/users/{user_id}"  // 추가된 부분
+        };
+    }
+}
+
+message User {
+    string user_id = 1;
+    string password = 2;
+    string name = 3;
+    string email = 4;
+    string locale = 5;
+    string region_id = 6;
+    string o_token = 7;
+    string r_token = 8;
+    string sns_provider = 9;
+    string start_date = 10;
+    string end_date = 11;
+}
+
+message ListUsersRequest {
+    v1.common.ListParameters list_parameters = 1;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+    string user_id = 1;
+}
+
+message DeleteUserRequest {
+    string user_id = 1;
+}
