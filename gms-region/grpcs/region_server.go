@@ -20,7 +20,7 @@ func (me *RegionServer) AddDBContext(orm interface{}) {
 
 func (me *RegionServer) GetCountry(ctx context.Context, req *regionpb.GetCountryRequest) (*regionpb.Country, error) {
 	country := regionpb.Country{}
-	country.CountyId = req.CountryId
+	country.Id = req.CountryId
 	_, err := me.orm.Get(&country)
 	if err != nil {
 		gms.Logger.Error("DB", "SQL", err)
@@ -73,7 +73,7 @@ func (me *RegionServer) DeleteCountry(ctx context.Context, req *regionpb.DeleteC
 
 func (me *RegionServer) GetProvince(ctx context.Context, req *regionpb.GetProvinceRequest) (*regionpb.Province, error) {
 	province := regionpb.Province{}
-	province.ProvinceId = req.ProvinceId
+	province.Id = req.ProvinceId
 	_, err := me.orm.Get(&province)
 	if err != nil {
 		gms.Logger.Error("DB", "SQL", err)
@@ -126,7 +126,7 @@ func (me *RegionServer) DeleteProvince(ctx context.Context, req *regionpb.Delete
 
 func (me *RegionServer) GetCity(ctx context.Context, req *regionpb.GetCityRequest) (*regionpb.City, error) {
 	city := regionpb.City{}
-	city.CityId = req.CityId
+	city.Id = req.CityId
 	_, err := me.orm.Get(&city)
 	if err != nil {
 		gms.Logger.Error("DB", "SQL", err)

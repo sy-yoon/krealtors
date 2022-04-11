@@ -8,7 +8,7 @@ package v1.region;
 
 option go_package = "github.com/sy-yoon/krealtors/protos/g1/region";
 
-import "google/api/annotations.proto"; // 추가된 부분
+import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "protos/v1/common/common.proto";
 
@@ -104,7 +104,7 @@ service RegionService {
     }
 }
 message Country {
-    string county_id = 1;
+    string id = 1;
     string name = 2;
     string currency = 3;
     bool open = 4;
@@ -113,7 +113,7 @@ message Country {
 }
 
 message Province {
-    string province_id = 1;
+    string id = 1;
     string name = 2;
     string country_id = 3;
     bool open = 4;
@@ -122,7 +122,7 @@ message Province {
 }
 
 message City {
-    string city_id = 1;
+    string id = 1;
     string name = 2;
     string province_id = 3;
     bool open = 4;
@@ -135,7 +135,7 @@ message GetCountryRequest {
 }
 
 message ListCountriesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListCountriesResponse {
@@ -151,7 +151,7 @@ message GetProvinceRequest {
 }
 
 message ListProvinciesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListProvinciesResponse {
@@ -167,7 +167,7 @@ message GetCityRequest {
 }
 
 message ListCitiesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListCitiesResponse {

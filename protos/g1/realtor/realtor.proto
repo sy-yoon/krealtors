@@ -1,0 +1,121 @@
+// protos/v1/realtor/realtor.proto
+//protoc -I . --go_out . --go_opt paths=source_relative --go-grpc_out . --go-grpc_opt paths=source_relative protos/g1/realtor/realtor.proto
+//protoc -I . --grpc-gateway_out . --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true protos/g1/realtor/realtor.proto
+
+
+syntax = "proto3";
+
+package v1.realtor;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "protos/v1/common/common.proto";
+
+option go_package = "github.com/sy-yoon/krealtors/protos/g1/realtor";
+
+message ReItem {
+    string id = 1;
+    string title = 2;
+    string type = 3;
+    string tx_type = 4;
+    string available_date = 5;
+    string user_id = 6;
+    string city_id = 7;
+    string address = 8;
+    string thumbnail = 9;
+    int32 price = 10;
+    int32 bedroom = 11;
+    int32 bathroom = 12;
+    int32 parking = 13;
+    bool garage = 14;
+    bool furnished = 15;
+    string facing = 16;
+    string area = 17;
+    string content = 18;
+    int64 created_date = 19;
+    int64 updated_date = 20;
+    message Location {
+        double lat = 1;
+        double lng = 2;
+    }
+    Location location = 21;
+
+    message Options {
+        bool aircon = 1;
+        bool refrigerator = 2;
+        bool washingmachine = 3;
+        bool dishwasher = 4;
+        bool microwave = 5;
+        bool tv = 6;
+        bool doorlock = 7;
+    }
+    Options options = 22;
+
+    repeated string images = 23;
+}
+
+message ReItemHeader {
+    string id = 1;
+    string title = 2;
+    string type = 3;
+    string tx_type = 4;
+    string user_id = 5;
+    string city_id = 6;
+    string thumbnail = 7;
+    int32 price = 8;
+    int32 bedroom = 9;
+    int32 bathroom = 10;
+    string available_date = 11;
+    string address = 12;
+}
+
+service RealtorService {
+    rpc GetReItem(GetReItemRequest) returns (ReItem){
+        option (google.api.http) = {
+            get: "/v1/realtor/reis/{id}"
+        };
+    }
+    rpc ListReItems(ListReItemsRequest) returns (ListReItemsResponse){
+        option (google.api.http) = {
+            get: "/v1/realtor/reis"
+        };
+    }
+    rpc CreateReItem(ReItem) returns (ReItem){
+        option (google.api.http) = {
+            post: "/v1/realtor/reis"
+            body: "*"
+        };
+    }
+    rpc UpdateReItem(ReItem) returns (ReItem){
+        option (google.api.http) = {
+            patch: "/v1/realtor/reis"
+            body: "*"
+        };
+    }
+    rpc DeleteReItem(DeleteReItemRequest) returns (google.protobuf.Empty){
+        option (google.api.http) = {
+            delete: "/v1/realtor/reis/{id}"
+        };
+    }
+}
+
+message GetReItemRequest {
+    string id = 1;
+}
+
+message ListReItemsRequest {
+    v1.common.ListParameters query = 1;
+    string prev_id = 2;
+    string type = 3;
+    string tx_type = 4;
+    string city_id = 5;
+    bool recommanded = 6;
+}
+
+message ListReItemsResponse {
+  repeated ReItemHeader items = 1;
+}
+
+message DeleteReItemRequest {
+    string id = 1;
+}

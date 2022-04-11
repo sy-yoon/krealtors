@@ -34,7 +34,7 @@ message User {
 }
 
 message ListUsersRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListUsersResponse {

@@ -12,7 +12,7 @@ import "protos/v1/common/common.proto";
 option go_package = "github.com/sy-yoon/krealtors/protos/v1/region";
 
 message Country {
-    string county_id = 1;
+    string id = 1;
     string name = 2;
     string currency = 3;
     bool open = 4;
@@ -21,7 +21,7 @@ message Country {
 }
 
 message Province {
-    string province_id = 1;
+    string id = 1;
     string name = 2;
     string country_id = 3;
     bool open = 4;
@@ -30,7 +30,7 @@ message Province {
 }
 
 message City {
-    string city_id = 1;
+    string id = 1;
     string name = 2;
     string province_id = 3;
     bool open = 4;
@@ -64,7 +64,7 @@ message GetCountryRequest {
 }
 
 message ListCountriesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListCountriesResponse {
@@ -80,7 +80,7 @@ message GetProvinceRequest {
 }
 
 message ListProvinciesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListProvinciesResponse {
@@ -96,7 +96,7 @@ message GetCityRequest {
 }
 
 message ListCitiesRequest {
-    v1.common.ListParameters list_parameters = 1;
+    v1.common.ListParameters query = 1;
 }
 
 message ListCitiesResponse {
@@ -106,3 +106,48 @@ message ListCitiesResponse {
 message DeleteCityRequest {
     string city_id = 1;
 }
+
+/*
+type Country struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CountyId    string `protobuf:"bytes,1,opt,name=county_id,json=countyId,proto3" json:"county_id,omitempty" xorm:"cntry_id"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty" xorm:"cntry_nm"`
+	Currency    string `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty" xorm:"crrcy"`
+	Open        bool   `protobuf:"varint,4,opt,name=open,proto3" json:"open,omitempty"  xorm:"open"`
+	CreatedDate string `protobuf:"bytes,5,opt,name=created_date,json=createdDate,proto3" json:"created_date,omitempty" xorm:"-"`
+	UpdatedDate string `protobuf:"bytes,6,opt,name=updated_date,json=updatedDate,proto3" json:"updated_date,omitempty" xorm:"-"`
+}
+
+type Province struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProvinceId  string `protobuf:"bytes,1,opt,name=province_id,json=provinceId,proto3" json:"province_id,omitempty" xorm:"prvnc_id"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty" xorm:"prvnc_nm"`
+	CountryId   string `protobuf:"bytes,3,opt,name=country_id,json=countryId,proto3" json:"country_id,omitempty" xorm:"cntry_id"`
+	Open        bool   `protobuf:"varint,4,opt,name=open,proto3" json:"open,omitempty"  xorm:"open"`
+	CreatedDate string `protobuf:"bytes,5,opt,name=created_date,json=createdDate,proto3" json:"created_date,omitempty" xorm:"-"`
+	UpdatedDate string `protobuf:"bytes,6,opt,name=updated_date,json=updatedDate,proto3" json:"updated_date,omitempty" xorm:"-"`
+}
+
+type City struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CityId      string `protobuf:"bytes,1,opt,name=city_id,json=cityId,proto3" json:"city_id,omitempty" xorm:"city_id"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"  xorm:"city_nm"`
+	ProvinceId  string `protobuf:"bytes,3,opt,name=province_id,json=provinceId,proto3" json:"province_id,omitempty" xorm:"prvnc_id"`
+	Open        bool   `protobuf:"varint,4,opt,name=open,proto3" json:"open,omitempty" xorm:"open"`
+	CreatedDate string `protobuf:"bytes,5,opt,name=created_date,json=createdDate,proto3" json:"created_date,omitempty" xorm:"-"`
+	UpdatedDate string `protobuf:"bytes,6,opt,name=updated_date,json=updatedDate,proto3" json:"updated_date,omitempty" xorm:"-"`
+}
+func (x *City) TableName() string{
+	return "city"
+}
+
+*/

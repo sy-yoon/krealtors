@@ -6,10 +6,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/sy-yoon/krealtors/api-gateway/handlers"
+	realtorpb "github.com/sy-yoon/krealtors/protos/g1/realtor"
 	regionpb "github.com/sy-yoon/krealtors/protos/g1/region"
 	userpb "github.com/sy-yoon/krealtors/protos/g1/user"
 )
@@ -17,6 +21,7 @@ import (
 const portNumber = "9000"
 const userServerPortNumber = "9001"
 const regionServerPortNumber = "9002"
+const realtorServerPortNumber = "9003"
 
 var allowedHeaders = map[string]struct{}{
 	"x-request-id": {},
@@ -75,7 +80,32 @@ func main() {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
 	}
 
-	if err := http.ListenAndServe(":"+portNumber, mux); err != nil {
-		log.Fatalf("failed to serve: %s", err)
+	if err := realtorpb.RegisterRealtorServiceHandlerFromEndpoint(
+		ctx,
+		mux,
+		"localhost:"+realtorServerPortNumber,
+		options,
+	); err != nil {
+		log.Fatalf("failed to register gRPC gateway: %v", err)
+	}
+
+	// Creating a normal HTTP server
+	server := gin.New()
+	server.Use(gin.Logger())
+
+	server.Use(static.Serve("/realty", static.LocalFile("../realty", false)))
+	server.Any("v1/users/*w", gin.WrapH(mux))
+	server.Any("v1/region/*w", gin.WrapH(mux))
+	server.Any("v1/realtor/*w", gin.WrapH(mux))
+	server.POST("v1/storage/images", handlers.SaveAndResizeImage)
+
+	server.GET("/test", func(c *gin.Context) {
+		c.String(http.StatusOK, "Ok")
+	})
+
+	// start server
+	err := server.Run("0.0.0.0:" + portNumber)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
