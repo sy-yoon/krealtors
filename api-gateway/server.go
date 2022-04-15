@@ -92,12 +92,17 @@ func main() {
 	// Creating a normal HTTP server
 	server := gin.New()
 	server.Use(gin.Logger())
-
+	server.Use(gin.Recovery())
+	server.Use(static.Serve("/assets", static.LocalFile("web/www/static", false)))
 	server.Use(static.Serve("/realty", static.LocalFile("../realty", false)))
 	server.Any("v1/users/*w", gin.WrapH(mux))
 	server.Any("v1/region/*w", gin.WrapH(mux))
 	server.Any("v1/realtor/*w", gin.WrapH(mux))
 	server.POST("v1/storage/images", handlers.SaveAndResizeImage)
+
+	server.GET("/", func(c *gin.Context) {
+		c.File("web/www/static/index.html")
+	})
 
 	server.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")

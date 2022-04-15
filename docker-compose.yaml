@@ -20,6 +20,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: 1qaz2wsx!!
+  gateway:
+    image: coolnice/gateway
+    restart: always
+    ports:
+      - 80:9000
+    
   
 volumes:
   postgresql_data:
