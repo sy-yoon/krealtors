@@ -30,8 +30,6 @@ volumes:
   postgresql_data:
   mongodb_data:
 
-
-
 #EC2 AWS
 #sudo yum -y install docker
 #sudo systemctl start docker
