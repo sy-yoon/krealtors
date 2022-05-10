@@ -20,6 +20,11 @@ type ServerConfig struct {
 	BindAddress    string `mapstructure:"BIND_ADDRESS"`
 	BindPort       int    `mapstructure:"BIND_PORT"`
 	StaticContents string `mapstructure:"STATIC_CONTENTS_PATH"`
+	RealtyItemDirectory string `mapstructure:"REALTY_ITEM_DIRECTORY"`
+	UserEndPoint string `mapstructure:"USER_ENDPOINT"`
+	RegionEndPoint string `mapstructure:"REGION_ENDPOINT"`
+	RealtorEndPoint string `mapstructure:"REALTOR_ENDPOINT"`
+
 }
 
 func (me *ServerConfig) GetBindPort() int {

@@ -20,9 +20,10 @@ COPY ./protos ./protos
 # Build the binary.
 #RUN go mod tidy
 RUN go mod tidy -compat=1.17
-RUN go build -v -o ./build/region ./gms-region/server.go
+RUN go build -v -o ./build/region ./gms-region
 
 FROM alpine:3.9
+COPY --from=builder /app/krealtors/gms-region/server.env /app/krealtors/server.env
 COPY --from=builder /app/krealtors/build/region /app/krealtors/region
 CMD ["/app/krealtors/region"]
 

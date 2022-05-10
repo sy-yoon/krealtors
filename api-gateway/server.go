@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-contrib/static"
@@ -19,9 +20,6 @@ import (
 )
 
 const portNumber = "9000"
-const userServerPortNumber = "9001"
-const regionServerPortNumber = "9002"
-const realtorServerPortNumber = "9003"
 
 var allowedHeaders = map[string]struct{}{
 	"x-request-id": {},
@@ -38,6 +36,7 @@ func isHeaderAllowed(s string) (string, bool) {
 }
 
 func main() {
+	LoadSettings()
 	ctx := context.Background()
 	mux := runtime.NewServeMux(
 		runtime.WithOutgoingHeaderMatcher(isHeaderAllowed),
@@ -65,7 +64,7 @@ func main() {
 	if err := userpb.RegisterUserServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"user-service:"+userServerPortNumber,
+		Settings.UserEndPoint,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
@@ -74,7 +73,7 @@ func main() {
 	if err := regionpb.RegisterRegionServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"region-service:"+regionServerPortNumber,
+		Settings.RegionEndPoint,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
@@ -83,7 +82,7 @@ func main() {
 	if err := realtorpb.RegisterRealtorServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"realtor-service:"+realtorServerPortNumber,
+		Settings.RealtorEndPoint,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
@@ -93,8 +92,8 @@ func main() {
 	server := gin.New()
 	server.Use(gin.Logger())
 	server.Use(gin.Recovery())
-	server.Use(static.Serve("/assets", static.LocalFile("web/www/static", false)))
-	server.Use(static.Serve("/realty", static.LocalFile("../realty", false)))
+	server.Use(static.Serve("/assets", static.LocalFile(Settings.StaticContents, false)))
+	server.Use(static.Serve("/realty", static.LocalFile(Settings.RealtyItemDirectory, false)))
 	server.Any("v1/users/*w", gin.WrapH(mux))
 	server.Any("v1/region/*w", gin.WrapH(mux))
 	server.Any("v1/realtor/*w", gin.WrapH(mux))
@@ -109,7 +108,7 @@ func main() {
 	})
 
 	// start server
-	err := server.Run("0.0.0.0:" + portNumber)
+	err := server.Run("0.0.0.0:" + strconv.Itoa(Settings.GetBindPort()))
 	if err != nil {
 		log.Fatal(err)
 	}

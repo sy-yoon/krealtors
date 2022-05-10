@@ -20,9 +20,10 @@ COPY ./realty ./realty
 # Build the binary.
 #RUN go mod tidy
 RUN go mod tidy -compat=1.17
-RUN go build -v -o ./build/gateway ./api-gateway/server.go
+RUN go build -v -o ./build/gateway ./api-gateway
 
 FROM alpine:3.9
+COPY --from=builder /app/krealtors/api-gateway/server.env /app/krealtors/server.env
 COPY --from=builder /app/krealtors/build/gateway /app/krealtors/gateway
 CMD ["/app/krealtors/gateway"]
 
