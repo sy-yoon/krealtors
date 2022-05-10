@@ -1,34 +1,50 @@
 #docker-compose up -d
 version: '3.1'
 services:
-  postgresql:
+  post-db:
     image: 'postgres'
     restart: always
+    networks: krealtors-net
     ports:
       - 5432:5432
     volumes:
       - 'postgresql_data:/var/lib/postgresql/data'
     environment:
       - POSTGRES_PASSWORD=1qaz2wsx!!
-  mongo:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    volumes:
-      - 'mongodb_data:/data/db'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoadmin
-      MONGO_INITDB_ROOT_PASSWORD: 1qaz2wsx!!
+  # mongo-db:
+  #   image: mongo
+  #   restart: always
+  #   networks: krealtors-net
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - 'mongodb_data:/data/db'
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: mongoadmin
+  #     MONGO_INITDB_ROOT_PASSWORD: 1qaz2wsx!!
   gateway:
-    image: coolnice/gateway
+    image: gateway
     restart: always
+    networks: krealtors-net
+    depends_on:
+      - post-db
+      #- mongo-db
     ports:
-      - 80:9000
-  
+      - 9000:9000
+
+  realtor-service:
+    image: realtor
+    restart: always
+    networks: krealtors-net
+    depends_on:
+      - post-db
+    
+    
 volumes:
   postgresql_data:
-  mongodb_data:
+
+networks:
+  krealtors-net:
 
 #EC2 AWS
 #sudo yum -y install docker

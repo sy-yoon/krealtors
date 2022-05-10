@@ -65,7 +65,7 @@ func main() {
 	if err := userpb.RegisterUserServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"localhost:"+userServerPortNumber,
+		"user-service:"+userServerPortNumber,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
@@ -74,7 +74,7 @@ func main() {
 	if err := regionpb.RegisterRegionServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"localhost:"+regionServerPortNumber,
+		"region-service:"+regionServerPortNumber,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
@@ -83,7 +83,7 @@ func main() {
 	if err := realtorpb.RegisterRealtorServiceHandlerFromEndpoint(
 		ctx,
 		mux,
-		"localhost:"+realtorServerPortNumber,
+		"realtor-service:"+realtorServerPortNumber,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
