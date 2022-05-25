@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/sy-yoon/krealtors/gms"
+	"github.com/sy-yoon/krealtors/gms-region/config"
 	"github.com/sy-yoon/krealtors/gms-region/grpcs"
 	regionpb "github.com/sy-yoon/krealtors/protos/v1/region"
 	"google.golang.org/grpc"
@@ -13,7 +14,7 @@ import (
 func main() {
 	// interface parameter는 포인터로 전달
 	gmService := gms.NewService()
-	if err := gmService.Configure(&Settings); err != nil {
+	if err := gmService.Configure(&config.Settings); err != nil {
 		log.Fatal(err)
 		return
 	}

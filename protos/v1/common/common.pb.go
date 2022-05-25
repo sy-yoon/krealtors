@@ -14,6 +14,11 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+	"context"
+	"strconv"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"errors"
 )
 
 const (
@@ -133,6 +138,98 @@ func (x *Images) GetImage() string {
 	return ""
 }
 
+type GeoLocation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Lat float64 `protobuf:"fixed64,1,opt,name=lat,proto3" json:"lat,omitempty"`
+	Lng float64 `protobuf:"fixed64,2,opt,name=lng,proto3" json:"lng,omitempty"`
+}
+
+  
+func (x *GeoLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeoLocation) ProtoMessage() {}
+
+func (x *GeoLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_v1_common_common_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeoLocation.ProtoReflect.Descriptor instead.
+func (*GeoLocation) Descriptor() ([]byte, []int) {
+	return file_protos_v1_common_common_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GeoLocation) GetLat() float64 {
+	if x != nil {
+		return x.Lat
+	}
+	return 0
+}
+
+func (x *GeoLocation) GetLng() float64 {
+	if x != nil {
+		return x.Lng
+	}
+	return 0
+}
+
+func (x GeoLocation) GormDataType() string {
+	return "point"
+  }
+
+func (x GeoLocation) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
+	return clause.Expr{
+		SQL:  "Point(?,?)",
+		Vars: []interface{}{x.Lat, x.Lng},
+	}
+}
+
+func (x *GeoLocation) Scan(v interface{}) error {
+	var data []byte
+    switch v := v.(type) {
+    case []byte:
+        data = v
+    case string:
+        data = []byte(v)
+    case nil:
+        return nil
+    default:
+        return errors.New("(*Point).Scan: unsupported data type")
+    }
+
+    if len(data) == 0 {
+        return nil
+    }
+
+	var err error
+    data = data[1 : len(data)-1] // drop the surrounding parentheses
+    for i := 0; i < len(data); i++ {
+        if data[i] == ',' {
+            if x.Lat, err = strconv.ParseFloat(string(data[:i]), 64); err != nil {
+                return err
+            }
+
+            if x.Lng, err = strconv.ParseFloat(string(data[i+1:]), 64); err != nil {
+                return err
+            }
+            break
+        }
+    }
+	return nil
+}
+
 var File_protos_v1_common_common_proto protoreflect.FileDescriptor
 
 var file_protos_v1_common_common_proto_rawDesc = []byte{
@@ -146,10 +243,13 @@ var file_protos_v1_common_common_proto_rawDesc = []byte{
 	0x62, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x42,
 	0x79, 0x22, 0x1e, 0x0a, 0x06, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x69,
 	0x6d, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x69, 0x6d, 0x61, 0x67,
-	0x65, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x73, 0x79, 0x2d, 0x79, 0x6f, 0x6f, 0x6e, 0x2f, 0x6b, 0x72, 0x65, 0x61, 0x6c, 0x74, 0x6f, 0x72,
-	0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6f, 0x6d, 0x6d,
-	0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x31, 0x0a, 0x0b, 0x47, 0x65, 0x6f, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x10, 0x0a, 0x03, 0x6c, 0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x01, 0x52, 0x03, 0x6c,
+	0x61, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x6c, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x01, 0x52,
+	0x03, 0x6c, 0x6e, 0x67, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x73, 0x79, 0x2d, 0x79, 0x6f, 0x6f, 0x6e, 0x2f, 0x6b, 0x72, 0x65, 0x61, 0x6c,
+	0x74, 0x6f, 0x72, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -164,10 +264,11 @@ func file_protos_v1_common_common_proto_rawDescGZIP() []byte {
 	return file_protos_v1_common_common_proto_rawDescData
 }
 
-var file_protos_v1_common_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_protos_v1_common_common_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_protos_v1_common_common_proto_goTypes = []interface{}{
 	(*ListParameters)(nil), // 0: v1.common.ListParameters
 	(*Images)(nil),         // 1: v1.common.Images
+	(*GeoLocation)(nil),    // 2: v1.common.GeoLocation
 }
 var file_protos_v1_common_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -207,6 +308,18 @@ func file_protos_v1_common_common_proto_init() {
 				return nil
 			}
 		}
+		file_protos_v1_common_common_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GeoLocation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -214,7 +327,7 @@ func file_protos_v1_common_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protos_v1_common_common_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

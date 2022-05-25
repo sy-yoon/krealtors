@@ -17,3 +17,8 @@ message ListParameters {
 message Images {
     string image = 1;
 }
+
+message GeoLocation {
+    double lat = 1;
+    double lng = 2;
+}

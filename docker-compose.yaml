@@ -4,7 +4,8 @@ services:
   post-db:
     image: 'postgres'
     restart: always
-    networks: krealtors-net
+    networks: 
+      - krealtors-net
     ports:
       - 5432:5432
     volumes:
@@ -26,34 +27,36 @@ services:
   realtor-service:
     image: realtor
     restart: always
-    networks: krealtors-net
+    networks: 
+      - krealtors-net
     depends_on:
       - post-db
     environment:
-      - DB_TYPE = mongodb
-      - DB_USER = krealor
-      - DB_PASSWORD = 1qaz2wsx!!
-      - DB_HOST = cluster0.oh1rc.mongodb.net/myFirstDatabase
-      - DB_PORT = 27017
-      - DATABASE = krealtor
-      - DB_MAX_IDLE_CONNS = 10
-      - DB_MAX_OPEN_CONNS = 10
-      - LOG_LEVEL = info
-      - BIND_PORT = 9003
+      - DB_TYPE=mongodb
+      - DB_USER=krealor
+      - DB_PASSWORD=1qaz2wsx!!
+      - DB_HOST=cluster0.oh1rc.mongodb.net/myFirstDatabase
+      - DB_PORT=27017
+      - DATABASE=krealtor
+      - DB_MAX_IDLE_CONNS=10
+      - DB_MAX_OPEN_CONNS=10
+      - LOG_LEVEL=info
+      - BIND_PORT=9003
 
   gateway:
     image: gateway
     restart: always
-    networks: krealtors-net
+    networks: 
+      - krealtors-net
     depends_on:
       - post-db
       - realtor-service
     ports:
       - 9000:9000
     environment:
-      - USER_ENDPOINT = user-service:9001
-      - REGION_ENDPOINT = region-service:9002
-      - REALTOR_ENDPOINT = realtor-service:9003
+      - USER_ENDPOINT=user-service:9001
+      - REGION_ENDPOINT=region-service:9002
+      - REALTOR_ENDPOINT=realtor-service:9003
 
 volumes:
   postgresql_data:

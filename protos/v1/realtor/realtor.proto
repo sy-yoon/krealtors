@@ -12,137 +12,74 @@ import "protos/v1/common/common.proto";
 option go_package = "github.com/sy-yoon/krealtors/protos/v1/realtor";
 
 message ReItem {
-    string id = 1;
+    int64 id = 1;
     string title = 2;
-    string type = 3;
-    string tx_type = 4;
+    int32 re_type = 3;
+    int32 tx_type = 4;
     string available_date = 5;
     string user_id = 6;
     string city_id = 7;
     string address = 8;
     string thumbnail = 9;
-    int32 price = 10;
+    int64 price = 10;
     int32 bedroom = 11;
     int32 bathroom = 12;
     int32 parking = 13;
     bool garage = 14;
     bool furnished = 15;
-    string facing = 16;
-    string area = 17;
+    int32 facing = 16;
+    int32 area = 17;
     string content = 18;
-    int64 created_date = 19;
-    int64 updated_date = 20;
-    message Location {
-        double lat = 1;
-        double lng = 2;
-    }
-    Location location = 21;
-
-    message Options {
-        bool aircon = 1;
-        bool refrigerator = 2;
-        bool washingmachine = 3;
-        bool dishwasher = 4;
-        bool microwave = 5;
-        bool tv = 6;
-        bool doorlock = 7;
-    }
-    Options options = 22;
-
-    repeated string images = 23;
+    v1.common.GeoLocation geo_location = 19;
+    string images = 20;
+    string created_date = 21;
+    string updated_date = 22;
+    
 }
 
 message ReItemHeader {
-    string id = 1;
+    int64 id = 1;
     string title = 2;
-    string type = 3;
-    string tx_type = 4;
+    int32 re_type = 3;
+    int32 tx_type = 4;
     string user_id = 5;
     string city_id = 6;
     string thumbnail = 7;
-    int32 price = 8;
+    int64 price = 8;
     int32 bedroom = 9;
     int32 bathroom = 10;
     string available_date = 11;
     string address = 12;
+    v1.common.GeoLocation geo_location = 13;
+    string created_date = 14;
+    string updated_date = 15;
 }
 
 service RealtorService {
     rpc GetReItem(GetReItemRequest) returns (ReItem);
-    rpc ListReItems(ListReItemsRequest) returns (ListReItemsResponse);
+    rpc ListReItemHeader(ListReItemHeaderRequest) returns (ListReItemHeaderResponse);
     rpc CreateReItem(ReItem) returns (ReItem);
     rpc UpdateReItem(ReItem) returns (ReItem);
     rpc DeleteReItem(DeleteReItemRequest) returns (google.protobuf.Empty);
 }
 
 message GetReItemRequest {
-    string id = 1;
+    int64 id = 1;
 }
 
-message ListReItemsRequest {
+message ListReItemHeaderRequest {
     v1.common.ListParameters query = 1;
-    string prev_id = 2;
-    string type = 3;
-    string txType = 4;
-    string cityId = 5;
+    int64 prev_id = 2;
+    int32 re_type = 3;
+    int32 txType = 4;
+    string city_id = 5;
     bool recommanded = 6;
 }
 
-message ListReItemsResponse {
+message ListReItemHeaderResponse {
   repeated ReItemHeader items = 1;
 }
 
 message DeleteReItemRequest {
-    string id = 1;
+    int64 id = 1;
 }
-
-/*
-type ReItem struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id            string           `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" bson:"_id"`
-	Title         string           `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty" bson:"title"`
-	Type          string           `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty" bson:"type"`
-	TxType        string           `protobuf:"bytes,4,opt,name=tx_type,json=txType,proto3" json:"tx_type,omitempty" bson:"txType"`
-	AvailableDate string           `protobuf:"bytes,5,opt,name=available_date,json=availableDate,proto3" json:"available_date,omitempty" bson:"availableDate"`
-	UserId        string           `protobuf:"bytes,6,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty" bson:"userId"`
-	CityId        string           `protobuf:"bytes,7,opt,name=city_id,json=cityId,proto3" json:"city_id,omitempty" bson:"cityId"`
-	Address       string           `protobuf:"bytes,8,opt,name=address,proto3" json:"address,omitempty" bson:"address"`
-	Thumbnail     string           `protobuf:"bytes,9,opt,name=thumbnail,proto3" json:"thumbnail,omitempty" bson:"thumbnail"`
-	Price         int32            `protobuf:"varint,10,opt,name=price,proto3" json:"price,omitempty" bson:"price"`
-	Bedroom       int32            `protobuf:"varint,11,opt,name=bedroom,proto3" json:"bedroom,omitempty" bson:"bedroom"`
-	Bathroom      int32            `protobuf:"varint,12,opt,name=bathroom,proto3" json:"bathroom,omitempty" bson:"bathroom"`
-	Parking       int32            `protobuf:"varint,13,opt,name=parking,proto3" json:"parking,omitempty" bson:"parking"`
-	Garage        bool             `protobuf:"varint,14,opt,name=garage,proto3" json:"garage,omitempty" bson:"garage"`
-	Furnished     bool             `protobuf:"varint,15,opt,name=furnished,proto3" json:"furnished,omitempty" bson:"furnished"`
-	Facing        string           `protobuf:"bytes,16,opt,name=facing,proto3" json:"facing,omitempty" bson:"facing"`
-	Area          string           `protobuf:"bytes,17,opt,name=area,proto3" json:"area,omitempty" bson:"area"`
-	Content       string           `protobuf:"bytes,18,opt,name=content,proto3" json:"content,omitempty" bson:"content"`
-	CreatedDate   int64            `protobuf:"varint,19,opt,name=created_date,json=createdDate,proto3" json:"created_date,omitempty"`
-	UpdatedDate   int64            `protobuf:"varint,20,opt,name=updated_date,json=updatedDate,proto3" json:"updated_date,omitempty"`
-	Location      *ReItem_Location `protobuf:"bytes,21,opt,name=location,proto3" json:"location,omitempty" bson:"location"`
-	Options       *ReItem_Options  `protobuf:"bytes,22,opt,name=options,proto3" json:"options,omitempty" bson:"options"`
-	Images        []string         `protobuf:"bytes,23,rep,name=images,proto3" json:"images,omitempty" bson:"images"`
-}
-
-type ReItemHeader struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" bson:"_id"`
-	Title         string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty" bson:"title"`
-	Type          string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty" bson:"type"`
-	TxType        string `protobuf:"bytes,4,opt,name=tx_type,json=txType,proto3" json:"tx_type,omitempty" bson:"txType"`
-	UserId        string `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty" bson:"userId"`
-	CityId        string `protobuf:"bytes,6,opt,name=city_id,json=cityId,proto3" json:"city_id,omitempty" bson:"cityId"`
-	Thumbnail     string `protobuf:"bytes,7,opt,name=thumbnail,proto3" json:"thumbnail,omitempty" bson:"thumbnail"`
-	Price         int32  `protobuf:"varint,8,opt,name=price,proto3" json:"price,omitempty"  bson:"price"`
-	Bedroom       int32  `protobuf:"varint,9,opt,name=bedroom,proto3" json:"bedroom,omitempty" bson:"bedroom"`
-	Bathroom      int32  `protobuf:"varint,10,opt,name=bathroom,proto3" json:"bathroom,omitempty" bson:"bathroom"`
-	AvailableDate string `protobuf:"bytes,11,opt,name=available_date,json=availableDate,proto3" json:"available_date,omitempty" bson:"availableDate"`
-	Address       string `protobuf:"bytes,12,opt,name=address,proto3" json:"address,omitempty"  bson:"address"`
-}
-*/

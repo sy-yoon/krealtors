@@ -52,7 +52,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	gorm.io/driver/postgres v1.3.1
-	gorm.io/gorm v1.23.3 // indirect
+	gorm.io/gorm v1.23.5 // indirect
 )
 
 require (
@@ -93,4 +93,13 @@ require (
 	github.com/ugorji/go/codec v1.1.7 // indirect
 )
 
-require golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+require (
+	github.com/stretchr/testify v1.7.1
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+)

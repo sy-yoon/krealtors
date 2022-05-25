@@ -5,6 +5,7 @@ import (
 
 	"github.com/sy-yoon/krealtors/gms"
 	"github.com/sy-yoon/krealtors/gms-realtor/grpcs"
+	"github.com/sy-yoon/krealtors/gms-region/config"
 	realtorpb "github.com/sy-yoon/krealtors/protos/v1/realtor"
 	"google.golang.org/grpc"
 )
@@ -14,7 +15,7 @@ import (
 func main() {
 	// interface parameter는 포인터로 전달
 	gmService := gms.NewService()
-	if err := gmService.Configure(&Settings); err != nil {
+	if err := gmService.Configure(&config.Settings); err != nil {
 		log.Fatal(err)
 		return
 	}
@@ -23,5 +24,4 @@ func main() {
 		gs.AddDBContext(gmService.GetDBContext())
 		realtorpb.RegisterRealtorServiceServer(grpcServer, &gs)
 	})
-
 }

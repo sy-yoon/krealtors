@@ -14,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"xorm.io/xorm"
 )
 
@@ -48,7 +50,7 @@ func (me *gmService) Configure(appSettings Configuration) error {
 }
 
 func (me *gmService) configureSettings(appSettings Configuration) error {
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./..")
 	viper.SetConfigName("server")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
@@ -90,6 +92,8 @@ func (me *gmService) configureLogger() error {
 func (me *gmService) configureDB() error {
 	if me.settings.GetDBType() == "mongodb" {
 		return me.configureMongoDB()
+	} else if me.settings.GetDBType() == "gorm" {
+		return me.configureGorm()
 	}
 	return me.configureRDB()
 }
@@ -154,7 +158,41 @@ func (me *gmService) configureRDB() error {
 	return nil
 }
 
+func (me *gmService) configureGorm() error {
+	//connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslrootcert=AWS-ECF.pem sslmode=verify-full",
+	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		me.settings.GetDBHost(),
+		me.settings.GetDBPort(),
+		me.settings.GetDBUser(),
+		me.settings.GetDBPassword(),
+		me.settings.GetDatabase())
+
+	db, err := gorm.Open(postgres.Open(connString), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	me.dbContext = db
+	Logger.Info("DB", "Initialization", "OK")
+	return nil
+}
+
 func (me *gmService) StartUp(fn RegisterFunc) {
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(me.settings.GetBindPort()))
+	if err != nil {
+		Logger.Fatal("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	fn(grpcServer)
+	//userpb.RegisterUserServer(grpcServer, &userServer{})
+
+	Logger.Info("start gRPC server on %s port", me.settings.GetBindPort())
+	if err := grpcServer.Serve(lis); err != nil {
+		Logger.Fatal("failed to serve: %s", err)
+	}
+}
+
+func (me *gmService) StartUpForTest(fn RegisterFunc) {
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(me.settings.GetBindPort()))
 	if err != nil {
 		Logger.Fatal("failed to listen: %v", err)

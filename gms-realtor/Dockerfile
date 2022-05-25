@@ -23,7 +23,7 @@ RUN go mod tidy -compat=1.17
 RUN go build -v -o ./build/realtor ./gms-realtor
 
 FROM alpine:3.9
-COPY --from=builder /app/krealtors/gms-realtor/server.env /app/krealtors/server.env
+COPY --from=builder /app/krealtors/gms-realtor/server.env /server.env
 COPY --from=builder /app/krealtors/build/realtor /app/krealtors/realtor
 CMD ["/app/krealtors/realtor"]
 

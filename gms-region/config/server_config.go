@@ -1,8 +1,7 @@
-package main
+package config
 
 import (
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/spf13/viper"
 )
 
 var Settings ServerConfig
@@ -60,16 +59,4 @@ func (me *ServerConfig) GetDBMaxOpenConns() int {
 
 func (me *ServerConfig) GetLogLevel() string {
 	return me.LogLevel
-}
-
-func LoadSettings() error {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("server")
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
-	viper.ReadInConfig()
-	if err := viper.ReadInConfig(); err != nil {
-		return err
-	}
-	return viper.Unmarshal(&Settings)
 }

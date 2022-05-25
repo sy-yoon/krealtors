@@ -11,7 +11,7 @@ RUN go mod download
 #RUN go mod tidy -v
 
 # Copy local code to the container image.
-COPY ./gms-region ./gms-region
+COPY ./gms-user ./gms-user
 COPY ./gms ./gms
 COPY ./google ./google
 COPY ./protos ./protos
@@ -20,12 +20,12 @@ COPY ./protos ./protos
 # Build the binary.
 #RUN go mod tidy
 RUN go mod tidy -compat=1.17
-RUN go build -v -o ./build/region ./gms-region
+RUN go build -v -o ./build/user ./gms-user
 
 FROM alpine:3.9
-COPY --from=builder /app/krealtors/gms-region/server.env /server.env
-COPY --from=builder /app/krealtors/build/region /app/krealtors/region
-CMD ["/app/krealtors/region"]
+COPY --from=builder /app/krealtors/gms-user/server.env /server.env
+COPY --from=builder /app/krealtors/build/user /app/krealtors/user
+CMD ["/app/krealtors/user"]
 
 
 # 이미지 생성 명령어 (현 파일과 같은 디렉토리에서)
