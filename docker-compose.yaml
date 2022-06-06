@@ -23,7 +23,17 @@ services:
   #   environment:
   #     MONGO_INITDB_ROOT_USERNAME: mongoadmin
   #     MONGO_INITDB_ROOT_PASSWORD: 1qaz2wsx!!
-  
+
+  redis-service:
+    image: 'redis'
+    restart: always
+    networks:
+      - krealtors-net
+    depends_on:
+      - post-db
+    ports:
+      - 6379:6379
+
   realtor-service:
     image: realtor
     restart: always

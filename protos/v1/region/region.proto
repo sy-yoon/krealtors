@@ -14,29 +14,33 @@ option go_package = "github.com/sy-yoon/krealtors/protos/v1/region";
 message Country {
     string id = 1;
     string name = 2;
-    string currency = 3;
-    bool open = 4;
-    string created_date = 5;
-    string updated_date = 6;
+    string created_date = 3;
+    string updated_date = 4;
+    string currency = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
+    repeated Province provincies = 8;
 }
 
 message Province {
     string id = 1;
     string name = 2;
-    string country_id = 3;
-    bool open = 4;
-    string created_date = 5;
-    string updated_date = 6;
+    string created_date = 3;
+    string updated_date = 4;
+    string country_id = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
+    repeated City cities = 8;
 }
 
 message City {
     string id = 1;
     string name = 2;
-    string province_id = 3;
-    bool open = 4;
-    string geo_location = 5;
-    string created_date = 6;
-    string updated_date = 7;
+    string created_date = 3;
+    string updated_date = 4;
+    string province_id = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
 }
 
 service RegionService {
@@ -107,10 +111,3 @@ message ListCitiesResponse {
 message DeleteCityRequest {
     string id = 1;
 }
-
-/*
-func (x *City) TableName() string{
-	return "city"
-}
-
-*/

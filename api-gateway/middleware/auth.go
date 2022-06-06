@@ -1,30 +1,29 @@
-package middlewares
+package middleware
 
-import (
-	"fmt"
-	"net/http"
-	"os"
-	"time"
+// // import (
+// // 	"fmt"
+// // 	"net/http"
+// // 	"os"
+// // 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
-	userpb "github.com/sy-yoon/krealtors/protos/g1/user"
-)
+// // 	jwt "github.com/dgrijalva/jwt-go"
+// // 	userpb "github.com/sy-yoon/krealtors/protos/g1/user"
+// // )
 
-var ACCESS_SECRET = []byte(os.Getenv("ACCESS_SECRET"))
-var REFRESH_SECRET = []byte(os.Getenv("REFRESH_SECRET"))
+// var ACCESS_SECRET = []byte(os.Getenv("ACCESS_SECRET"))
+// var REFRESH_SECRET = []byte(os.Getenv("REFRESH_SECRET"))
 
-type AuthTokenClaims struct {
-	UserID             string   `json:"id"`   // 유저 ID
-	Name               string   `json:"name"` // 유저 이름
-	Email              string   `json:"mail"` // 유저 메일
-	Role               []string `json:"role"` // 유저 역할
-	jwt.StandardClaims          // 표준 토큰 Claims
-}
+// type AuthTokenClaims struct {
+// 	UserID             string   `json:"id"`   // 유저 ID
+// 	Name               string   `json:"name"` // 유저 이름
+// 	Email              string   `json:"mail"` // 유저 메일
+// 	Role               []string `json:"role"` // 유저 역할
+// 	jwt.StandardClaims          // 표준 토큰 Claims
+// }
 
-type authHeader struct {
-	IDToken string `header:"Authorization"`
-}
-
+// type authHeader struct {
+// 	IDToken string `header:"Authorization"`
+// }
 
 /*
 func NewToken(user *userpb.User) {

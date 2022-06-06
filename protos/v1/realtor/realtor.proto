@@ -30,7 +30,7 @@ message ReItem {
     int32 facing = 16;
     int32 area = 17;
     string content = 18;
-    v1.common.GeoLocation geo_location = 19;
+    v1.common.GeoLocation location = 19;
     string images = 20;
     string created_date = 21;
     string updated_date = 22;
@@ -50,7 +50,7 @@ message ReItemHeader {
     int32 bathroom = 10;
     string available_date = 11;
     string address = 12;
-    v1.common.GeoLocation geo_location = 13;
+    v1.common.GeoLocation location = 13;
     string created_date = 14;
     string updated_date = 15;
 }

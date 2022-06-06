@@ -58,60 +58,6 @@ func (me *RealtorServer) CreateReItem(ctx context.Context, item *realtorpb.ReIte
 		return nil, err
 	}
 
-	//reItem := me.AllocNewObjectIdAndImagePath(item)
-
-	// sql := `INSERT INTO reis (title,
-	// 						  reType,
-	// 						  txType,
-	// 						  cityId,
-	// 						  price,
-	// 						  address,
-	// 						  thumbnail,
-	// 						  images,
-	// 						  geolocation,
-	// 						  bedroom,
-	// 						  bathroom,
-	// 						  parking,
-	// 						  area,
-	// 						  availableDate,
-	// 						  userId)
-	// 		values(@title,
-	// 			   @reType,
-	// 			   @txType,
-	// 			   @cityId,
-	// 			   @price,
-	// 			   @address,
-	// 			   @thumbnail,
-	// 			   @images,
-	// 			   Point(@lat,@lng),
-	// 			   @bedroom,
-	// 			   @bathroom,
-	// 			   @parking,
-	// 			   @area,
-	// 			   @availableDate,
-	// 			   @userId) returning id`
-
-	// result := me.orm.Raw(sql, map[string]interface{}{
-	// 	"title":          item.Title,
-	// 	"re_type":        item.ReType,
-	// 	"tx_type":        item.TxType,
-	// 	"city_id":        item.CityId,
-	// 	"price":          item.Price,
-	// 	"address":        item.Address,
-	// 	"thumbnail":      item.Thumbnail,
-	// 	"images":         item.Images,
-	// 	"lat":            item.GeoLocation.Lat,
-	// 	"lng":            item.GeoLocation.Lng,
-	// 	"bedroom":        item.Bedroom,
-	// 	"parking":        item.Bathroom,
-	// 	"bathroom":       item.Parking,
-	// 	"area":           item.Area,
-	// 	"available_date": item.AvailableDate,
-	// 	"user_id":        item.UserId}).Scan(&item.Id)
-	// if result.Error != nil {
-	// 	return nil, result.Error
-	// }
-
 	return item, nil
 }
 

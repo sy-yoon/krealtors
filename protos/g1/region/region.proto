@@ -15,7 +15,7 @@ import "protos/v1/common/common.proto";
 service RegionService {
     rpc GetCountry(GetCountryRequest) returns (Country){
         option (google.api.http) = {
-            get: "/v1/region/countries/{country_id}"  // 추가된 부분
+            get: "/v1/region/countries/{id}" 
         };
     }
 
@@ -39,13 +39,13 @@ service RegionService {
 
     rpc DeleteCountry(DeleteCountryRequest) returns (google.protobuf.Empty){
         option (google.api.http) = {
-            delete: "/v1/region/countries/{country_id}"
+            delete: "/v1/region/countries/{id}"
         };
     }
     
     rpc GetProvince(GetProvinceRequest) returns (Province){
         option (google.api.http) = {
-            get: "/v1/region/provincies/{province_id}"
+            get: "/v1/region/provincies/{id}"
         };
     }
 
@@ -75,7 +75,7 @@ service RegionService {
 
     rpc GetCity(GetCityRequest) returns (City){
         option (google.api.http) = {
-            get: "/v1/region/cities/{city_id}"
+            get: "/v1/region/cities/{id}"
         };
     }
 
@@ -103,35 +103,41 @@ service RegionService {
         };
     }
 }
+
 message Country {
     string id = 1;
     string name = 2;
-    string currency = 3;
-    bool open = 4;
-    string created_date = 5;
-    string updated_date = 6;
+    string created_date = 3;
+    string updated_date = 4;
+    string currency = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
+    repeated Province provincies = 8;
 }
 
 message Province {
     string id = 1;
     string name = 2;
-    string country_id = 3;
-    bool open = 4;
-    string created_date = 5;
-    string updated_date = 6;
+    string created_date = 3;
+    string updated_date = 4;
+    string country_id = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
+    repeated City cities = 8;
 }
 
 message City {
     string id = 1;
     string name = 2;
-    string province_id = 3;
-    bool open = 4;
-    string created_date = 5;
-    string updated_date = 6;
+    string created_date = 3;
+    string updated_date = 4;
+    string province_id = 5;
+    bool open = 6;
+    v1.common.GeoLocation location = 7;
 }
 
 message GetCountryRequest {
-    string country_id = 1;
+    string id = 1;
 }
 
 message ListCountriesRequest {
@@ -143,11 +149,11 @@ message ListCountriesResponse {
 }
 
 message DeleteCountryRequest {
-    string country_id = 1;
+    string id = 1;
 }
 
 message GetProvinceRequest {
-    string province_id = 1;
+    string id = 1;
 }
 
 message ListProvinciesRequest {
@@ -159,11 +165,11 @@ message ListProvinciesResponse {
 }
 
 message DeleteProvinceRequest {
-    string province_id = 1;
+    string id = 1;
 }
 
 message GetCityRequest {
-    string city_id = 1;
+    string id = 1;
 }
 
 message ListCitiesRequest {
@@ -175,5 +181,5 @@ message ListCitiesResponse {
 }
 
 message DeleteCityRequest {
-    string city_id = 1;
+    string id = 1;
 }

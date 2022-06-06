@@ -50,6 +50,7 @@ func (me *gmService) Configure(appSettings Configuration) error {
 }
 
 func (me *gmService) configureSettings(appSettings Configuration) error {
+	viper.AddConfigPath("./")
 	viper.AddConfigPath("./..")
 	viper.SetConfigName("server")
 	viper.SetConfigType("env")
@@ -99,7 +100,6 @@ func (me *gmService) configureDB() error {
 }
 
 func (me *gmService) configureMongoDB() error {
-
 	connString := fmt.Sprintf("mongodb+srv://%s:%s@%s?retryWrites=true&w=majority",
 		me.settings.GetDBUser(),
 		me.settings.GetDBPassword(),

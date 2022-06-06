@@ -14,12 +14,12 @@ import (
 	"google.golang.org/grpc/metadata"
 
 	"github.com/sy-yoon/krealtors/api-gateway/handlers"
+	"github.com/sy-yoon/krealtors/api-gateway/middleware"
 	realtorpb "github.com/sy-yoon/krealtors/protos/g1/realtor"
 	regionpb "github.com/sy-yoon/krealtors/protos/g1/region"
 	userpb "github.com/sy-yoon/krealtors/protos/g1/user"
+	"github.com/sy-yoon/krealtors/utils"
 )
-
-const portNumber = "9000"
 
 var allowedHeaders = map[string]struct{}{
 	"x-request-id": {},
@@ -88,15 +88,18 @@ func main() {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
 	}
 
+	rds := utils.NewRedisClient("192.168.140.130:6379")
+
+	muxWrapper := middleware.NewCacheHandler(mux, rds)
 	// Creating a normal HTTP server
 	server := gin.New()
 	server.Use(gin.Logger())
 	server.Use(gin.Recovery())
 	server.Use(static.Serve("/assets", static.LocalFile(Settings.StaticContents, false)))
 	server.Use(static.Serve("/realty", static.LocalFile(Settings.RealtyItemDirectory, false)))
-	server.Any("v1/users/*w", gin.WrapH(mux))
-	server.Any("v1/region/*w", gin.WrapH(mux))
-	server.Any("v1/realtor/*w", gin.WrapH(mux))
+	server.Any("v1/users/*w", gin.WrapH(muxWrapper))
+	server.Any("v1/region/*w", gin.WrapH(muxWrapper))
+	server.Any("v1/realtor/*w", gin.WrapH(muxWrapper))
 	server.POST("v1/storage/images", handlers.SaveAndResizeImage)
 
 	server.GET("/", func(c *gin.Context) {

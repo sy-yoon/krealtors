@@ -99,6 +99,23 @@ func TestGetProvince(t *testing.T) {
 	assert.Equal(t, "BC", resp.Name)
 }
 */
+func TestGetCountry(t *testing.T) {
+	ctx := context.Background()
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial bufnet: %v", err)
+	}
+	defer conn.Close()
+	client := regionpb.NewRegionServiceClient(conn)
+
+	resp, err := client.GetCountry(ctx, &regionpb.GetCountryRequest{Id: "CA"})
+	if err != nil {
+		t.Fatalf("TestGetCountry failed: %v", err)
+	}
+
+	assert.Equal(t, "캐나다", resp.Name)
+}
+
 func TestGetCity(t *testing.T) {
 	ctx := context.Background()
 	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
@@ -112,7 +129,9 @@ func TestGetCity(t *testing.T) {
 	if err != nil {
 		t.Fatalf("TestGetCity failed: %v", err)
 	}
-	fmt.Println(resp.GeoLocation)
+	fmt.Println(resp)
+	fmt.Println(resp.ProvinceId)
+	fmt.Println(resp.Name)
 	assert.Equal(t, "밴쿠버", resp.Name)
 }
 
