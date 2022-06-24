@@ -13,6 +13,7 @@ option go_package = "github.com/sy-yoon/krealtors/protos/v1/user";
 
 service UserService {
     rpc GetUser(GetUserRequest) returns (User);
+    rpc GetUserByEmail(GetUserRequest) returns (User);
     rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
     rpc CreateUser(User) returns (User);
     rpc UpdateUser(User) returns (User);
@@ -20,17 +21,15 @@ service UserService {
 }
 
 message User {
-    string user_id = 1;
+    int64 id = 1;
     string password = 2;
     string name = 3;
     string email = 4;
-    string locale = 5;
-    string region_id = 6;
-    string o_token = 7;
-    string r_token = 8;
-    string sns_provider = 9;
-    string start_date = 10;
-    string end_date = 11;
+    string photourl = 5;
+    string locale = 6;
+    string sns_provider = 7;
+    string created_date = 8;
+    string updated_date = 9;
 }
 
 message ListUsersRequest {
@@ -42,33 +41,11 @@ message ListUsersResponse {
 }
 
 message GetUserRequest {
-    string user_id = 1;
+    int64 id = 1;
+    string email = 2;
 }
 
 message DeleteUserRequest {
-    string user_id = 1;
+    int64 id = 1;
 }
 
-/*
-type User struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	UserId      string `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty" xorm:"usr_id"`
-	Password    string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty" xorm:"password"`
-	Name        string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty" xorm:"usr_nm"`
-	Email       string `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty" xorm:"email"`
-	Locale      string `protobuf:"bytes,5,opt,name=locale,proto3" json:"locale,omitempty" xorm:"locale"`
-	RegionId    string `protobuf:"bytes,6,opt,name=region_id,json=regionId,proto3" json:"region_id,omitempty" xorm:"rgn_id"`
-	OToken      string `protobuf:"bytes,7,opt,name=o_token,json=oToken,proto3" json:"o_token,omitempty" xorm:"o_tkn"`
-	RToken      string `protobuf:"bytes,8,opt,name=r_token,json=rToken,proto3" json:"r_token,omitempty" xorm:"r_tkn"`
-	SnsProvider string `protobuf:"bytes,9,opt,name=sns_provider,json=snsProvider,proto3" json:"sns_provider,omitempty" xorm:"sns_prvd"`
-	StartDate   string `protobuf:"bytes,10,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty" xorm:"-"`
-	EndDate     string `protobuf:"bytes,11,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty" xorm:"-"`
-}
-
-func (x *User) TableName() string {
-	return "usr"
-}
-*/

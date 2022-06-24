@@ -14,10 +14,10 @@ import "protos/v1/common/common.proto";
 option go_package = "github.com/sy-yoon/krealtors/protos/g1/realtor";
 
 message ReItem {
-    string id = 1;
+    int64 id = 1;
     string title = 2;
-    string type = 3;
-    string tx_type = 4;
+    int32 re_type = 3;
+    int32 tx_type = 4;
     string available_date = 5;
     string user_id = 6;
     string city_id = 7;
@@ -29,17 +29,14 @@ message ReItem {
     int32 parking = 13;
     bool garage = 14;
     bool furnished = 15;
-    string facing = 16;
-    string area = 17;
+    int32 facing = 16;
+    int32 area = 17;
     string content = 18;
-    int64 created_date = 19;
-    int64 updated_date = 20;
-    message Location {
-        double lat = 1;
-        double lng = 2;
-    }
-    Location location = 21;
-
+    v1.common.GeoLocation location = 19;
+    string images = 20;
+    string created_date = 21;
+    string updated_date = 22;
+/*
     message Options {
         bool aircon = 1;
         bool refrigerator = 2;
@@ -49,16 +46,15 @@ message ReItem {
         bool tv = 6;
         bool doorlock = 7;
     }
-    Options options = 22;
-
-    repeated string images = 23;
+*/
+    string options = 23;
 }
 
 message ReItemHeader {
-    string id = 1;
+    int64 id = 1;
     string title = 2;
-    string type = 3;
-    string tx_type = 4;
+    int32 re_type = 3;
+    int32 tx_type = 4;
     string user_id = 5;
     string city_id = 6;
     string thumbnail = 7;
@@ -67,7 +63,9 @@ message ReItemHeader {
     int32 bathroom = 10;
     string available_date = 11;
     string address = 12;
-    string geo_location = 13;
+    v1.common.GeoLocation location = 13;
+    string created_date = 14;
+    string updated_date = 15;
 }
 
 service RealtorService {
@@ -76,11 +74,12 @@ service RealtorService {
             get: "/v1/realtor/reis/{id}"
         };
     }
-    rpc ListReItems(ListReItemsRequest) returns (ListReItemsResponse){
+    rpc ListReItemHeader(ListReItemHeaderRequest) returns (ListReItemHeaderResponse){
         option (google.api.http) = {
             get: "/v1/realtor/reis"
         };
     }
+
     rpc CreateReItem(ReItem) returns (ReItem){
         option (google.api.http) = {
             post: "/v1/realtor/reis"
@@ -104,16 +103,16 @@ message GetReItemRequest {
     string id = 1;
 }
 
-message ListReItemsRequest {
+message ListReItemHeaderRequest {
     v1.common.ListParameters query = 1;
-    string prev_id = 2;
-    string type = 3;
-    string tx_type = 4;
+    int64 prev_id = 2;
+    int32 re_type = 3;
+    int32 txType = 4;
     string city_id = 5;
     bool recommanded = 6;
 }
 
-message ListReItemsResponse {
+message ListReItemHeaderResponse {
   repeated ReItemHeader items = 1;
 }
 

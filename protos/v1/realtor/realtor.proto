@@ -34,7 +34,18 @@ message ReItem {
     string images = 20;
     string created_date = 21;
     string updated_date = 22;
-    
+/*
+    message Options {
+        bool aircon = 1;
+        bool refrigerator = 2;
+        bool washingmachine = 3;
+        bool dishwasher = 4;
+        bool microwave = 5;
+        bool tv = 6;
+        bool doorlock = 7;
+    }
+*/
+    string options = 23;
 }
 
 message ReItemHeader {

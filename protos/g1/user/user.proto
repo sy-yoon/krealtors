@@ -8,50 +8,55 @@ package v1.user;
 
 option go_package = "github.com/sy-yoon/krealtors/protos/g1/user";
 
-import "google/api/annotations.proto"; // 추가된 부분
+import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "protos/v1/common/common.proto";
 
 service UserService {
     rpc GetUser(GetUserRequest) returns (User) {
         option (google.api.http) = {
-            get: "/v1/users/{user_id}"  // 추가된 부분
+            get: "/v1/users/{id}"
+        };
+    }
+    rpc GetUserByEmail(GetUserRequest) returns (User) {
+        option (google.api.http) = {
+            get: "/v1/users/{email}"
         };
     }
     rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
         option (google.api.http) = {
-            get: "/v1/users" // 추가된 부분
+            get: "/v1/users" 
         };
     }
     rpc CreateUser(User) returns (User) {
         option (google.api.http) = {
-            post: "/v1/users" // 추가된 부분
+            post: "/v1/users"
+            body: "*"
         };
     }
     rpc UpdateUser(User) returns (User) {
         option (google.api.http) = {
-            patch: "/v1/users" // 추가된 부분
+            patch: "/v1/users"
+            body: "*"
         };
     }
     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/v1/users/{user_id}"  // 추가된 부분
+            delete: "/v1/users/{id}"
         };
     }
 }
 
 message User {
-    string user_id = 1;
+    int64 id = 1;
     string password = 2;
     string name = 3;
     string email = 4;
-    string locale = 5;
-    string region_id = 6;
-    string o_token = 7;
-    string r_token = 8;
-    string sns_provider = 9;
-    string start_date = 10;
-    string end_date = 11;
+    string photourl = 5;
+    string locale = 6;
+    string sns_provider = 7;
+    string created_date = 8;
+    string updated_date = 9;
 }
 
 message ListUsersRequest {
@@ -63,9 +68,10 @@ message ListUsersResponse {
 }
 
 message GetUserRequest {
-    string user_id = 1;
+    int64 id = 1;
+    string email = 2;
 }
 
 message DeleteUserRequest {
-    string user_id = 1;
+    int64 id = 1;
 }

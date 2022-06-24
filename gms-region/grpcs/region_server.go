@@ -3,6 +3,7 @@ package grpcs
 import (
 	"context"
 
+	"github.com/sy-yoon/krealtors/protos/v1/common"
 	regionpb "github.com/sy-yoon/krealtors/protos/v1/region"
 	"github.com/sy-yoon/krealtors/utils"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -31,8 +32,102 @@ func (me *RegionServer) GetCountry(ctx context.Context, req *regionpb.GetCountry
 
 func (me *RegionServer) ListCountries(ctx context.Context, req *regionpb.ListCountriesRequest) (*regionpb.ListCountriesResponse, error) {
 	countries := []*regionpb.Country{}
-	if err := utils.CheckError(me.orm.Table("cntry").Find(&countries)); err != nil {
+	// if err := utils.CheckError(me.orm.Table("cntry").Find(&countries)); err != nil {
+	// 	return nil, err
+	// }
+
+	sql := `
+	WITH RECURSIVE region AS(
+		SELECT
+			id,
+			name,
+			open,
+			currency,
+			location,
+			1 as type
+		FROM
+			cntry		
+		UNION all
+		select 
+		   p.id,
+		   p.name,
+		   p.open,
+		   r.currency,
+		   p.location,
+		   p.type
+		  from
+		(select 
+			id,
+			name,
+			open,
+			location,
+			country_id as pid,
+			2 as type
+		 from 
+			 prvnc
+		 union all
+		 select 
+			id,
+			name,
+			open,
+			location,
+			province_id as pid,
+			3 as type
+		 from city) p,
+			region r 
+		 where r.id = p.pid 
+	) SELECT * 
+	FROM region
+	order by id
+	`
+
+	// Raw SQL
+	rows, err := me.orm.Raw(sql).Rows()
+	if err != nil {
 		return nil, err
+	}
+	defer rows.Close()
+	var (
+		id       string
+		name     string
+		open     bool
+		currency string
+		location *common.GeoLocation
+		_type    int32
+	)
+
+	var (
+		country  *regionpb.Country
+		province *regionpb.Province
+		city     *regionpb.City
+	)
+
+	for rows.Next() {
+		rows.Scan(&id, &name, &open, &currency, &location, &_type)
+
+		if _type == 1 {
+			country = &regionpb.Country{
+				Id:       id,
+				Name:     name,
+				Currency: currency,
+				Location: location,
+			}
+			countries = append(countries, country)
+		} else if _type == 2 {
+			province = &regionpb.Province{
+				Id:       id,
+				Name:     name,
+				Location: location,
+			}
+			country.Provincies = append(country.Provincies, province)
+		} else {
+			city = &regionpb.City{
+				Id:       id,
+				Name:     name,
+				Location: location,
+			}
+			province.Cities = append(province.Cities, city)
+		}
 	}
 
 	response := regionpb.ListCountriesResponse{
@@ -112,8 +207,6 @@ func (me *RegionServer) DeleteProvince(ctx context.Context, req *regionpb.Delete
 
 	return &emptypb.Empty{}, nil
 }
-
-
 
 func (me *RegionServer) GetCity(ctx context.Context, req *regionpb.GetCityRequest) (*regionpb.City, error) {
 	city := regionpb.City{}

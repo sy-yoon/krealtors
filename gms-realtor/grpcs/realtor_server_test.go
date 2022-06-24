@@ -2,6 +2,7 @@ package grpcs
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"testing"
@@ -80,6 +81,8 @@ func TestGetReItem(t *testing.T) {
 	if err != nil {
 		t.Fatalf("TestGetCountry failed: %v", err)
 	}
+
+	fmt.Println(resp)
 
 	assert.Equal(t, int64(1), resp.Id)
 }

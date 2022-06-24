@@ -2,6 +2,8 @@ package grpcs
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	realtorpb "github.com/sy-yoon/krealtors/protos/v1/realtor"
 	"github.com/sy-yoon/krealtors/utils"
@@ -14,26 +16,38 @@ type RealtorServer struct {
 	orm *gorm.DB
 }
 
-// func genFilter(req *realtorpb.ListReItemsRequest) interface{} {
-// 	filter := bson.D{}
-// 	if req.CityId != "" {
-// 		filter = append(filter, bson.E{"cityId", req.CityId})
-// 	}
+func genFilter(req *realtorpb.ListReItemHeaderRequest) map[string]interface{} {
+	conditions := make(map[string]interface{})
+	if req.CityId != "" {
+		conditions["city_id"] = req.CityId
+	}
 
-// 	if req.ReType != 0 {
-// 		filter = append(filter, bson.E{"type", req.ReType})
-// 	}
+	if req.TxType != 0 {
+		conditions["tx_type"] = req.TxType
+	}
 
-// 	if req.TxType != 0 {
-// 		filter = append(filter, bson.E{"txType", req.TxType})
-// 	}
+	if req.ReType != 0 {
+		conditions["re_type"] = req.ReType
+	}
 
-// 	return filter
-// }
+	return conditions
+}
 
 func (me *RealtorServer) ListReItemHeader(ctx context.Context, req *realtorpb.ListReItemHeaderRequest) (*realtorpb.ListReItemHeaderResponse, error) {
 	var reItems []*realtorpb.ReItemHeader
-	if err := utils.CheckError(me.orm.Table("reis").Find(&reItems)); err != nil {
+	var sb strings.Builder
+	params := genFilter(req)
+	for key, _ := range params {
+		sb.WriteString(" and ")
+		sb.WriteString(fmt.Sprintf("%s = @%s", key, key))
+	}
+
+	conditions := sb.String()
+	if len(conditions) > 0 {
+		conditions = conditions[4 : len(conditions)]
+	}
+
+	if err := utils.CheckError(me.orm.Table("reis").Where(conditions, params).Find(&reItems)); err != nil {
 		return nil, err
 	}
 
@@ -60,7 +74,6 @@ func (me *RealtorServer) CreateReItem(ctx context.Context, item *realtorpb.ReIte
 
 	return item, nil
 }
-
 
 func (me *RealtorServer) UpdateReItem(ctx context.Context, req *realtorpb.ReItem) (*realtorpb.ReItem, error) {
 	if err := utils.CheckError(me.orm.Save(req)); err != nil {

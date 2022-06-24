@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,13 +14,33 @@ import (
 )
 
 func SaveAndResizeImage(c *gin.Context) {
-	srcFilePath, err := SaveImage(c)
+	srcFilePath, err := SaveImages(c)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 	c.JSON(http.StatusCreated, srcFilePath)
 	go ResizeImage(srcFilePath)
+}
+
+func SaveImages(c *gin.Context) (string, error) {
+	form, _ := c.MultipartForm()
+	files := form.File["file"]
+
+	for _, file := range files {
+		ext := filepath.Ext(file.Filename)
+		log.Println(ext)
+
+		// Upload the file to specific dst.
+		dst := fmt.Sprintf("%s/%s%s", "../realty", file.Filename, "")
+		err := c.SaveUploadedFile(file, dst)
+		if err != nil {
+			return "", err
+		}
+
+	}
+
+	return "", nil
 }
 
 func SaveImage(c *gin.Context) (string, error) {

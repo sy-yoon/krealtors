@@ -38,6 +38,7 @@ func (me *CacheHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	val, err := me.client.Get(ctx, r.URL.String()).Bytes()
 	if err != redis.Nil {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
 		w.Write(val)
 		return

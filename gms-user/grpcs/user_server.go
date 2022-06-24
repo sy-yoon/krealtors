@@ -3,33 +3,42 @@ package grpcs
 import (
 	"context"
 
-	"github.com/sy-yoon/krealtors/gms"
 	userpb "github.com/sy-yoon/krealtors/protos/v1/user"
+	"github.com/sy-yoon/krealtors/utils"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"xorm.io/xorm"
+	"gorm.io/gorm"
 )
 
 type UserServer struct {
 	userpb.UserServiceServer
-	orm *xorm.Engine
+	orm *gorm.DB
 }
 
 func (me *UserServer) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*userpb.User, error) {
-	user := userpb.User{}
-	user.UserId = req.UserId
-	_, err := me.orm.Get(&user)
-	if err != nil {
-		gms.Logger.Error("DB", "SQL", err)
+	user := userpb.User{
+		Id: req.Id,
+	}
+	if err := utils.CheckError(me.orm.Table("user").First(&user)); err != nil {
 		return nil, err
 	}
+
+	return &user, nil
+}
+
+func (me *UserServer) GetUserByEmail(ctx context.Context, req *userpb.GetUserRequest) (*userpb.User, error) {
+	user := userpb.User{
+		Email: req.Email,
+	}
+	if err := utils.CheckError(me.orm.Table("user").First(&user)); err != nil {
+		return nil, err
+	}
+
 	return &user, nil
 }
 
 func (me *UserServer) ListUsers(ctx context.Context, req *userpb.ListUsersRequest) (*userpb.ListUsersResponse, error) {
 	users := []*userpb.User{}
-	err := me.orm.Find(&users)
-	if err != nil {
-		gms.Logger.Error("DB", "SQL", err)
+	if err := utils.CheckError(me.orm.Table("user").Find(&users)); err != nil {
 		return nil, err
 	}
 
@@ -39,31 +48,29 @@ func (me *UserServer) ListUsers(ctx context.Context, req *userpb.ListUsersReques
 	return &response, nil
 }
 func (me *UserServer) CreateUser(ctx context.Context, user *userpb.User) (*userpb.User, error) {
-	_, err := me.orm.InsertOne(user)
-	if err != nil {
-		gms.Logger.Error("DB", "SQL", err)
+	if err := utils.CheckError(me.orm.Table("user").Omit("created_date", "updated_date").Create(user)); err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 func (me *UserServer) UpdateUser(ctx context.Context, user *userpb.User) (*userpb.User, error) {
-	_, err := me.orm.Update(user)
-	if err != nil {
-		gms.Logger.Error("DB", "SQL", err)
+	if err := utils.CheckError(me.orm.Table("user").Save(user)); err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 func (me *UserServer) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest) (*emptypb.Empty, error) {
 	var user userpb.User
-	_, err := me.orm.Where("cntry_id", req.UserId).Delete(&user)
-	if err != nil {
-		gms.Logger.Error("DB", "SQL", err)
+	user.Id = req.Id
+	if err := utils.CheckError(me.orm.Table("user").Delete(&user)); err != nil {
 		return nil, err
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
 func (me *UserServer) AddDBContext(orm interface{}) {
-	me.orm = orm.(*xorm.Engine)
+	me.orm = orm.(*gorm.DB)
 }

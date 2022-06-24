@@ -88,9 +88,14 @@ func main() {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
 	}
 
-	rds := utils.NewRedisClient("192.168.140.130:6379")
+	utils.RedisInit()
+	conn, err := grpc.Dial(Settings.UserEndPoint, options...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	grpcUserClient := userpb.NewUserServiceClient(conn)
 
-	muxWrapper := middleware.NewCacheHandler(mux, rds)
+	muxWrapper := middleware.NewCacheHandler(mux, utils.GetRedisClient())
 	// Creating a normal HTTP server
 	server := gin.New()
 	server.Use(gin.Logger())
@@ -98,20 +103,29 @@ func main() {
 	server.Use(static.Serve("/assets", static.LocalFile(Settings.StaticContents, false)))
 	server.Use(static.Serve("/realty", static.LocalFile(Settings.RealtyItemDirectory, false)))
 	server.Any("v1/users/*w", gin.WrapH(muxWrapper))
-	server.Any("v1/region/*w", gin.WrapH(muxWrapper))
+	server.Any("v1/region/*w", gin.WrapH(mux))
 	server.Any("v1/realtor/*w", gin.WrapH(muxWrapper))
-	server.POST("v1/storage/images", handlers.SaveAndResizeImage)
+	server.POST("v1/storage/images", middleware.IsAuthorized, handlers.SaveAndResizeImage)
 
 	server.GET("/", func(c *gin.Context) {
 		c.File("web/www/static/index.html")
 	})
 
+	accountHandler := handlers.AccountHandler{grpcUserClient}
+
+	server.POST("account/login", accountHandler.SignIn)
+	//	server.POST("account/register", accountHandler.SignUp)
+
 	server.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")
 	})
 
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"http://localhost:3000", "http://10.0.0.135:3000"}
+	// server.Use(cors.New(config))
+
 	// start server
-	err := server.Run("0.0.0.0:" + strconv.Itoa(Settings.GetBindPort()))
+	err = server.Run("0.0.0.0:" + strconv.Itoa(Settings.GetBindPort()))
 	if err != nil {
 		log.Fatal(err)
 	}
